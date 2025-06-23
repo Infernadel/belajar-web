@@ -1,0 +1,87 @@
+<<<<<<<
+    const nextBtn = document.getElementById('next-btn');
+=======
+    
+<<<<<<<
+    function selectAnswer(answer) {
+      if (currentQuestionIndex >= questions.length) return;
+      // Disable all answer buttons
+      const buttons = answersContainer.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = true);
+      if (answer.correct) {
+        correctCount++;
+        correctCountEl.textContent = correctCount;
+        feedbackEl.textContent = `Jawabanmu, "${answer.text}", benar!`;
+        feedbackEl.className = 'feedback correct';
+        soundPlayer.pause();
+        soundPlayer.currentTime = 0;
+        soundPlayer.src = soundCorrectUrl;
+        soundPlayer.play();
+      } else {
+        wrongCount++;
+        wrongCountEl.textContent = wrongCount;
+        feedbackEl.textContent = `Jawabanmu, "${answer.text}", salah!`;
+        feedbackEl.className = 'feedback incorrect';
+        soundPlayer.pause();
+        soundPlayer.currentTime = 0;
+        soundPlayer.src = soundWrongUrl;
+        soundPlayer.play();
+      }
+      // Show feedback briefly then move to next question or result
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= questions.length) {
+          showResult();
+        } else {
+          showQuestion();
+        }
+      }, 1000);
+
+    function showResult() {
+      finalCorrectEl.textContent = correctCount;
+      finalWrongEl.textContent = wrongCount;
+      showScreen(resultScreen);
+      setActiveNav(navHome);
+    }
+=======
+    function selectAnswer(answer) {
+      if (currentQuestionIndex >= questions.length) return;
+      // Disable all answer buttons
+      const buttons = answersContainer.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = true);
+      if (answer.correct) {
+        correctCount++;
+        correctCountEl.textContent = correctCount;
+        feedbackEl.textContent = `Jawabanmu, "${answer.text}", benar!`;
+        feedbackEl.className = 'feedback correct';
+        soundPlayer.pause();
+        soundPlayer.currentTime = 0;
+        soundPlayer.src = soundCorrectUrl;
+        soundPlayer.play();
+      } else {
+        wrongCount++;
+        wrongCountEl.textContent = wrongCount;
+        feedbackEl.textContent = `Jawabanmu, "${answer.text}", salah!`;
+        feedbackEl.className = 'feedback incorrect';
+        soundPlayer.pause();
+        soundPlayer.currentTime = 0;
+        soundPlayer.src = soundWrongUrl;
+        soundPlayer.play();
+      }
+      // Show feedback briefly then move to next question or result
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= questions.length) {
+          showResult();
+        } else {
+          showQuestion();
+        }
+      }, 1000);
+    }
+
+    function showResult() {
+      finalCorrectEl.textContent = correctCount;
+      finalWrongEl.textContent = wrongCount;
+      showScreen(resultScreen);
+      setActiveNav(navHome);
+    }

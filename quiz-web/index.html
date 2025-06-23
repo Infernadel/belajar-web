@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bakukan! - Quiz Web</title>
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #2563eb; /* blue-600 */
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 1rem;
+      cursor: pointer;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    header {
+      background-color: #1e40af; /* blue-800 */
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header .logo {
+      font-weight: 900;
+      font-size: 1.5rem;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+    }
+    main {
+      flex-grow: 1;
+      padding: 150px 2rem 2rem 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    h1 {
+      font-weight: 900;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    p, ul {
+      font-weight: 500;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    button {
+      background-color: white;
+      color: #2563eb;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 900;
+      font-size: 1.25rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    button:hover:not(:disabled) {
+      background-color: #e0e7ff; /* lighter blue */
+    }
+    button:disabled {
+      background-color: #a5b4fc;
+      cursor: not-allowed;
+    }
+    .scoreboard {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .score {
+      background-color: #1e40af;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      min-width: 80px;
+      user-select: none;
+    }
+    .score .number {
+      font-weight: 900;
+      font-size: 1.5rem;
+    }
+    .score .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .question-text {
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .answers button {
+      font-size: 1.3rem;
+      padding: 0.75rem;
+      border-radius: 1rem;
+    }
+    .feedback {
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      user-select: none;
+    }
+    .feedback.correct {
+      color: #22c55e; /* green-500 */
+    }
+    .feedback.incorrect {
+      color: #ef4444; /* red-500 */
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-group button {
+      min-width: 140px;
+    }
+    /* About page */
+    .about-text {
+      font-weight: 500;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    .about-text ul {
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    /* Navigation active link style */
+    nav a.active {
+      text-decoration: underline;
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Bakukan!</div>
+    <nav>
+      <a href="#" id="nav-home" class="active">Beranda</a>
+      <a href="#" id="nav-play">Mainkan</a>
+      <a href="#" id="nav-about">Tentang</a>
+    </nav>
+  </header>
+  <main>
+    <!-- Home Screen -->
+    <section id="home-screen">
+      <h1>Bakukan!</h1>
+      <p>Yuk tebak kata mana yang benar! Pilih jawaban yang sesuai ejaan baku dan kumpulkan skor terbaikmu.</p>
+      <button id="start-btn">Ayo Mulai!</button>
+    </section>
+
+    <!-- Quiz Screen -->
+    <section id="quiz-screen" style="display:none;">
+      <div class="scoreboard">
+        <div class="score">
+          <div class="number" id="correct-count">0</div>
+          <div class="label">Benar</div>
+        </div>
+        <div class="score">
+          <div class="number" id="wrong-count">0</div>
+          <div class="label">Salah</div>
+        </div>
+      </div>
+      <div class="question-text" id="question-text">Pilihlah jawaban yang benar!</div>
+      <div class="answers" id="answers-container">
+        <!-- Answer buttons inserted here -->
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </section>
+
+    <!-- Result Screen -->
+    <section id="result-screen" style="display:none; text-align:center;">
+      <h1>Skor akhirmu:</h1>
+      <div class="scoreboard" style="justify-content:center; margin-bottom: 2rem;">
+        <div class="score">
+          <div class="number" id="final-correct">0</div>
+          <div class="label">Benar</div>
+        </div>
+        <div class="score">
+          <div class="number" id="final-wrong">0</div>
+          <div class="label">Salah</div>
+        </div>
+      </div>
+      <button id="play-again-btn">Main Lagi</button>
+      <button id="back-home-btn">Kembali ke Halaman Awal</button>
+    </section>
+
+    <!-- About Screen -->
+    <section id="about-screen" style="display:none;">
+      <h1>Bakukan!</h1>
+      <div class="about-text">
+        <p>Bakukan! adalah permainan kuis yang membantu kamu belajar memilih kata yang benar sesuai ejaan Bahasa Indonesia.<br />
+        Di sini, kamu bisa:</p>
+        <ul>
+          <li>Menebak kata yang baku</li>
+          <li>Bermain sambil belajar</li>
+          <li>Menambah pengetahuan bahasa</li>
+        </ul>
+        <p>Bakukan cocok untuk anak-anak dan siapa saja yang ingin belajar Bahasa Indonesia dengan cara yang seru dan mudah!</p>
+        <p>Disusun oleh:</p>
+        <ul>
+          <li>Iqbal Muhammad Firmansyah</li>
+          <li>Warraney William Timbuleng</li>
+          <li>Karunia Senduk</li>
+          <li>Valencia Tjandra</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Audio elements for sound effects -->
+  <!-- Removed audio elements for sound effects -->
+
+  <script>
+    const navHome = document.getElementById('nav-home');
+    const navPlay = document.getElementById('nav-play');
+    const navAbout = document.getElementById('nav-about');
+
+    const homeScreen = document.getElementById('home-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const aboutScreen = document.getElementById('about-screen');
+
+    const startBtn = document.getElementById('start-btn');
+    
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const backHomeBtn = document.getElementById('back-home-btn');
+
+    const correctCountEl = document.getElementById('correct-count');
+    const wrongCountEl = document.getElementById('wrong-count');
+    const finalCorrectEl = document.getElementById('final-correct');
+    const finalWrongEl = document.getElementById('final-wrong');
+
+    const questionText = document.getElementById('question-text');
+    const answersContainer = document.getElementById('answers-container');
+    const feedbackEl = document.getElementById('feedback');
+
+    // Create separate Audio objects for correct and wrong sounds
+    const soundCorrectPlayer = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+    const soundWrongPlayer = new Audio("ui-button-click-5-327756.mp3");
+
+    // Add error event listeners for debugging
+    soundCorrectPlayer.addEventListener('error', (e) => {
+      console.error('Error playing correct sound:', e);
+    });
+    soundWrongPlayer.addEventListener('error', (e) => {
+      console.error('Error playing wrong sound:', e);
+    });
+
+    // Full list of 20 pairs of word choices
+    const allQuestions = [
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Risiko', correct: true }, { text: 'Resiko', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Aktifitas', correct: false }, { text: 'Aktivitas', correct: true } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Izin', correct: true }, { text: 'Ijin', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Kualitas', correct: true }, { text: 'Kwalitas', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Filosofi', correct: true }, { text: 'Filosopi', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Analisis', correct: true }, { text: 'Analisa', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Efektif', correct: true }, { text: 'Efektip', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Strategi', correct: true }, { text: 'Strateji', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Motivasi', correct: true }, { text: 'Motifasi', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Kreatif', correct: true }, { text: 'Kreatip', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Produktif', correct: true }, { text: 'Produktiv', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Inovasi', correct: true }, { text: 'Inofasi', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Atlet', correct: true }, { text: 'Atlit', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Apotek', correct: true }, { text: 'Apotik', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Asyik', correct: true }, { text: 'Asik', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Praktik', correct: true }, { text: 'Praktek', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Nasihat', correct: true }, { text: 'Nasehat', correct: false } ] },
+      { question: 'Pilihlah jawaban yang benar!', answers: [ { text: 'Telur', correct: true }, { text: 'Telor', correct: false } ] },
+    ];
+
+    let currentQuestionIndex = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let answered = false;
+
+    // Selected 10 random questions for current play
+    let questions = [];
+
+    // Function to shuffle array
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    // Function to select 10 random questions from allQuestions
+    function selectRandomQuestions() {
+      const copy = allQuestions.slice();
+      shuffleArray(copy);
+      return copy.slice(0, 10);
+    }
+
+    function showScreen(screen) {
+      homeScreen.style.display = 'none';
+      quizScreen.style.display = 'none';
+      resultScreen.style.display = 'none';
+      aboutScreen.style.display = 'none';
+
+      screen.style.display = 'block';
+    }
+
+    function setActiveNav(nav) {
+      navHome.classList.remove('active');
+      navPlay.classList.remove('active');
+      navAbout.classList.remove('active');
+      nav.classList.add('active');
+    }
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      correctCountEl.textContent = correctCount;
+      wrongCountEl.textContent = wrongCount;
+      feedbackEl.textContent = '';
+      questions = selectRandomQuestions();
+      showScreen(quizScreen);
+      setActiveNav(navPlay);
+      showQuestion();
+    }
+
+    function showQuestion() {
+      feedbackEl.textContent = '';
+      const currentQuestion = questions[currentQuestionIndex];
+      questionText.textContent = currentQuestion.question;
+      answersContainer.innerHTML = '';
+      // Shuffle answers to randomize correct answer position
+      const shuffledAnswers = currentQuestion.answers.slice();
+      for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
+      }
+      shuffledAnswers.forEach(answer => {
+        const btn = document.createElement('button');
+        btn.textContent = answer.text;
+        btn.addEventListener('click', () => selectAnswer(answer));
+        answersContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(answer) {
+      if (currentQuestionIndex >= questions.length) return;
+      // Disable all answer buttons
+      const buttons = answersContainer.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = true);
+      if (answer.correct) {
+        correctCount++;
+        correctCountEl.textContent = correctCount;
+        feedbackEl.textContent = `Jawabanmu, "${answer.text}", benar!`;
+        feedbackEl.className = 'feedback correct';
+        soundCorrectPlayer.pause();
+        soundCorrectPlayer.currentTime = 0;
+        soundCorrectPlayer.play();
+      } else {
+        wrongCount++;
+        wrongCountEl.textContent = wrongCount;
+        feedbackEl.textContent = `Jawabanmu, "${answer.text}", salah!`;
+        feedbackEl.className = 'feedback incorrect';
+        soundWrongPlayer.pause();
+        soundWrongPlayer.currentTime = 0;
+        soundWrongPlayer.play();
+      }
+      // Show feedback briefly then move to next question or result
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= questions.length) {
+          showResult();
+        } else {
+          showQuestion();
+        }
+      }, 1000);
+    }
+
+    function showResult() {
+      finalCorrectEl.textContent = correctCount;
+      finalWrongEl.textContent = wrongCount;
+      showScreen(resultScreen);
+      setActiveNav(navHome);
+    }
+
+    // Event listeners
+    startBtn.addEventListener('click', startQuiz);
+    playAgainBtn.addEventListener('click', startQuiz);
+    backHomeBtn.addEventListener('click', () => {
+      showScreen(homeScreen);
+      setActiveNav(navHome);
+    });
+
+    navHome.addEventListener('click', (e) => {
+      e.preventDefault();
+      showScreen(homeScreen);
+      setActiveNav(navHome);
+    });
+    navPlay.addEventListener('click', (e) => {
+      e.preventDefault();
+      startQuiz();
+    });
+    navAbout.addEventListener('click', (e) => {
+      e.preventDefault();
+      showScreen(aboutScreen);
+      setActiveNav(navAbout);
+    });
+
+    // Initialize to home screen
+    showScreen(homeScreen);
+  </script>
+</body>
+</html>
